@@ -5,39 +5,40 @@ import os
 import random
 from dotenv import load_dotenv
 
-load_detenv()
-
-client = discord.Client()
+load_dotenv()
 
 token = os.getenv('TOKEN')
 
+intents = discord.Intents.default()
+intents.message_content = True
+
 
 # On bot initialization
-@client.event
-async def on_ready():
-        print("Logged in as a bot {0.user}".format(client))
+class MyClient(discord.Client):
+    async def on_ready(self):
+            print(f"Logged in as a bot {self.user}")
 
-@client.event
-async def on_message(message):
-    username = str(message.author).split("#")[0]
-    channel = str(message.channel.name)
-    user_message = str(message.content)
+    async def on_message(self, message):
+        username = str(message.author).split("#")[0]
+        channel = str(message.channel.name)
+        user_message = str(message.content)
 
-    #similar to printf(); in C
-    print(f'Message {user_message} by {username} on {channel}')
+        #similar to printf(); in C
+        print(f'Message {user_message} by {username} on {channel}')
 
-    if message.author == client.user:
-        return
-
-    if channel == "random":
-        if user_message.lower() == "hello" or user_message.lower() == "hi":
-            await message.channel.send(f'Hello {username}')
+        if message.author == self.user:
             return
-        elif user_message.lower == "bye":
-            await message.channel.send(f'Bye {username}')
-        elif user_message.lower() == "tell me a joke":
-            jokes = ["Good morning", "Good evening", "Good night"]
-            await message.channel.send(random.choice(jokes))
+
+        if channel == "general":
+            if user_message.lower() == "hello" or user_message.lower() == "hi":
+                await message.channel.send(f'Hello {username}')
+                return
+            elif user_message.lower() == "bye":
+                await message.channel.send(f'Bye {username}')
+            elif user_message.lower() == "tell me a joke":
+                jokes = ["Good morning", "Good evening", "Good night"]
+                await message.channel.send(random.choice(jokes))
 
 
+client = MyClient(intents=intents)
 client.run(token)
