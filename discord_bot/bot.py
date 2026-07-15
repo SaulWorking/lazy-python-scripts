@@ -9,6 +9,8 @@ from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
 
+guild_num = 
+GUILD_ID = discord.Object(id=guild_num)
 
 load_dotenv()
 
@@ -22,6 +24,13 @@ intents.message_content = True
 class MyClient(commands.Bot):
     async def on_ready(self):
             print(f"Logged in as a bot {self.user}")
+
+            try:
+                guild = discord.Object(id = guild_num)
+                synced = await self.tree.sync(guild=guild)
+                print(f'Synced {len(synced)} commands to guild {guild.id}')
+            except Exception as e:
+                print(f'Exception here {e}')
 
     async def on_message(self, message):
         username = str(message.author).split("#")[0]
@@ -43,9 +52,16 @@ class MyClient(commands.Bot):
             elif user_message.lower() == "tell me a joke":
                 jokes = ["Good morning", "Good evening", "Good night"]
                 await message.channel.send(random.choice(jokes))
-@client.tree.command(name="hello", description="say heklllo")
-async def sayhello(interaction: discord.Interaction):
-    await interaction.response.send_message("dih")
 
 client = MyClient(command_prefix="!", intents=intents)
+
+@client.tree.command(name="hello", description="say heklllo",guild=GUILD_ID)
+async def sayhello(interaction: discord.Interaction):
+    await interaction.response.send_message("awaken")
+
+@client.tree.command(name="start_embed", description="make image", guild=GUILD_ID)
+async def startembed(interaction: discord.Interaction):
+    embed = discord.Embed(title ="Hello title", description="Hello desc")
+    await interaction.response.send_message(embed=embed)
+
 client.run(token)
