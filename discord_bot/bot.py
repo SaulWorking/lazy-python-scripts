@@ -1,9 +1,14 @@
 # geeksforgeeks.org/python/discord-bot-in-python 
+# https://www.youtube.com/watch?v=26Sj5hJFqUs
 
-import discord
 import os
 import random
+
+import discord
+from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -14,7 +19,7 @@ intents.message_content = True
 
 
 # On bot initialization
-class MyClient(discord.Client):
+class MyClient(commands.Bot):
     async def on_ready(self):
             print(f"Logged in as a bot {self.user}")
 
@@ -38,7 +43,9 @@ class MyClient(discord.Client):
             elif user_message.lower() == "tell me a joke":
                 jokes = ["Good morning", "Good evening", "Good night"]
                 await message.channel.send(random.choice(jokes))
+@client.tree.command(name="hello", description="say heklllo")
+async def sayhello(interaction: discord.Interaction):
+    await interaction.response.send_message("dih")
 
-
-client = MyClient(intents=intents)
+client = MyClient(command_prefix="!", intents=intents)
 client.run(token)
